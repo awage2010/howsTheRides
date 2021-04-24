@@ -5,42 +5,7 @@ from datetime import timedelta
 import numpy as np
 import pygrib
 import os
-def decode_flight(origin, destination, route):
-    import requests
-    def return_AEROdata(method_name, **kwargs):
-        username = 'USMCman'
-        auth_key = 'acb3d27ce80ea60c5ac2305a2df9364c8be2c255'
-        origin_url = 'https://flightxml.flightaware.com/json/FlightXML2/' + method_name
-        kwargs=kwargs['kwargs']
-        origin_loc = requests.get(origin_url, params=kwargs, auth=(username, auth_key))
-        data_json = origin_loc.json()
-        return data_json
-    json_data = return_AEROdata('DecodeRoute', kwargs={'origin':origin,'route':route,'destination':destination})
-    if list(json_data.keys())[0] == 'error':
-        response = print('Ensure route string is formatted with spaces between fixes (no commas or other delimiters)')
-    elif list(json_data.keys())[0] != 'error':
-        def decode_route_result(return_json):
-            new_route_dict = {}
-            route_dict = return_json['DecodeRouteResult']['data']
-            wp_names, wp_type, latitudes, longitudes = [], [], [], []
-            for waypoints in route_dict:
-                name = waypoints['name']
-                waypoint_type = waypoints['type']
-                waypoint_latitude = waypoints['latitude']
-                waypoint_longitude = waypoints['longitude']
-                wp_names.append(name)
-                wp_type.append(waypoint_type)
-                latitudes.append(waypoint_latitude)
-                longitudes.append(waypoint_longitude)
-            new_route_dict = {
-                'names':wp_names,
-                'types':wp_type,
-                'lats':latitudes,
-                'lons':longitudes
-            }
-            return new_route_dict
-        response = decode_route_result(json_data)
-    return response
+
 def find_lengthattrs(fix_list, time_delta):
     length_list = [0,distance_between_points(fix_list[0], fix_list[1])]
     duration_list = [0,]
