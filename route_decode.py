@@ -38,7 +38,7 @@ class Center_Boundary():
     def __init__(self, center):
         self.lats = []
         self.lons = []
-        with open('AIRAC/Center_boundaries.csv') as csv:
+        with open('Center_boundaries.csv') as csv:
             for row in csv:
                 if row.startswith(center):
                     row = row.split(',')
@@ -52,60 +52,7 @@ class Center_Boundary():
         first_coord = (self.lons[0], self.lats[0])
         latlon_list.append(first_coord)
         self.latlons = [lon[0] for lon in latlon_list], [lat[1] for lat in latlon_list]
-        
-class ZJX_sectors():
-    def __init__(self, keyword):
-        file_list = [
-            'Central_import.csv',
-            'East_import.csv',
-            'Gulf_import.csv',
-            'North_import.csv',
-            'South_import.csv',
-            'West_import.csv'
-        ]
-        file_path = 'ZJX_airspace_data/'
-        file_list = [file_path + files for files in file_list]
-        sector_dict = {}
-        for file in file_list:
-            with open(file) as csv_file:
-                for row in csv_file:
-                    row = row.split(',')
-                    sector_name = row[0]
-                    sector_name = sector_name[sector_name.index("Sector "):sector_name.index("). ")+1] + ' - ' + file.strip('_import.csv').strip(file_path)
-                    sector_coords = row[-2:]
-                    lat = latlon_convert(sector_coords[0].replace(' ','').strip('"'))
-                    lon = latlon_convert(sector_coords[1].replace(' ','').strip('\n').strip('""'))
-                    lonlats = (lon, lat)
-                    if sector_name not in list(sector_dict.keys()):
-                        sector_dict[sector_name] = [lonlats]
-                    elif sector_name in list(sector_dict.keys()):
-                        sector_dict[sector_name].append(lonlats)
-        query_dict = {}              
-        for key, value in sector_dict.items():
-            keyword_variation = [keyword]
-            keyword_variation.append(keyword.lower())
-            keyword_variation.append(keyword.upper())
-            keyword_variation.append(keyword.title())
-            for kw_var in keyword_variation:
-                if kw_var in key:
-                    query_dict[key] = value
-                    
-        self.coords = list(query_dict.values())
-        self.sectors = list(query_dict.keys())
-        self.items = list(query_dict.items())
-        
-    def latlon_convert(latlon):
-        if latlon.endswith('N'):
-            degrees = float(latlon[0:2])
-            minutes = float(latlon[2:4])
-            seconds = float(latlon[4:6])
-            return round((degrees + (minutes/60) + (seconds/3600)), 5)
-        elif latlon.endswith('W'):
-            degrees = float(latlon[0:3])
-            minutes = float(latlon[3:5])
-            seconds = float(latlon[5:7])
-            return round(-1 * (degrees + (minutes/60) + (seconds/3600)), 5)
-    
+            
 class Routes():
     def __init__(self, route):
         def latlon_convert(latlon):
@@ -121,7 +68,7 @@ class Routes():
                 return round(-1 * (degrees + (minutes/60) + (seconds/3600)), 5)
         fix_names = []
         fix_coords = []
-        with open('AIRAC/AWY.txt') as route_file:
+        with open('AWY.txt') as route_file:
             for rows in route_file:
                 if rows.startswith('AWY2'):
                     name = rows[4:9].strip(' ')
@@ -153,7 +100,7 @@ class STAR():
                 seconds = float(latlon[6:-1])
                 return round(-1 * (degrees + (minutes/60) + (seconds/3600)), 5)
         route_package = []
-        with open('AIRAC/STARDP.txt') as route_file:
+        with open('STARDP.txt') as route_file:
             ID_grabber = ''
             for rows in route_file:
                 name = rows[38:51].strip(' ')
@@ -275,7 +222,7 @@ class SID():
                 return round(-1 * (degrees + (minutes/60) + (seconds/3600)), 5)
         route_package = []        
     
-        with open('AIRAC/STARDP.txt') as route_file:
+        with open('STARDP.txt') as route_file:
             ID_grabber = ''
             for rows in route_file:
                 name = rows[38:51].strip(' ')
